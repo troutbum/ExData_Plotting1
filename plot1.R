@@ -35,12 +35,9 @@ all_data <- read.csv(xFile, stringsAsFactors=FALSE,sep=";",na.strings="?", colCl
 # subset data
 data <- subset(all_data, Date == "1/2/2007" | Date == "2/2/2007")
 
-# plot to screen
+# plot to PNG file
 library(datasets)
-quartz()
+png("plot1.png", width = 480, height = 480)
 hist(data$Global_active_power, xlab = "Global Active Power (kilowatts)", 
      col="red", bg="white", main = "Global Active Power")
-
-# save plot as PNG file
-dev.copy(png, file="plot1.png", width = 480, height = 480, bg="white")
 dev.off()
