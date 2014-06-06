@@ -35,23 +35,41 @@ all_data <- read.csv(xFile, stringsAsFactors=FALSE,sep=";",na.strings="?", colCl
 # subset data
 data <- subset(all_data, Date == "1/2/2007" | Date == "2/2/2007")
 
-# create column for DateTime objects converted from character columns
-data$DateTime <- paste(data$Date, data$Time)
-data$DateTime <- strptime(data$DateTime, format="%d/%m/%Y %H:%M:%S")
+# create column for datetime objects converted from character columns
+data$datetime <- paste(data$Date, data$Time)
+data$datetime <- strptime(data$datetime, format="%d/%m/%Y %H:%M:%S")
 
 # plot to PNG file
 library(datasets)
-png("plot3.png", width = 480, height = 480)
+png("plot4.png", width = 480, height = 480)
+
+## set graphics parameters
+#       mfcol - matrix of sub plots (filled by column)
+#       mar - margins
+#       oma - outside margins
+par(mfcol = c(2, 2), mar = c(4, 4, 2, 2), oma = c(0, 0, 0, 0))
 
 # scale y-axis to accommodate all 3 measurements
-ylim = range(c(data$Sub_metering_1, data$Sub_metering_2, data$Sub_metering_3))
 
-# plot multiple measurements
-plot(data$DateTime, data$Sub_metering_1, type="l",
-     ylab = "Energy sub metering", xlab="")
-lines(data$DateTime, data$Sub_metering_2, type="l", col="red")
-lines(data$DateTime, data$Sub_metering_3, type="l", col="blue")
-legend("topright","",c("Sub_metering_1","Sub_metering_2","Sub_metering_3"), 
-       col=c("black","red","blue"),
-       lwd=c(1,1,1))
+# NW Plot (plot2) - use "with" to cleanup code
+with( data, plot(datetime, Global_active_power, type="l",
+     ylab = "Global Active Power", xlab=""))
+
+# SW Plot (plot3)
+ylim = range(c(data$Sub_metering_1, data$Sub_metering_2, data$Sub_metering_3))
+with(data, {
+        plot(datetime, Sub_metering_1, type="l", ylab = "Energy sub metering", xlab="")
+        lines(datetime, Sub_metering_2, type="l", col="red")
+        lines(datetime, Sub_metering_3, type="l", col="blue")
+        legend("topright","",c("Sub_metering_1","Sub_metering_2","Sub_metering_3"), 
+               bty="n", col=c("black","red","blue"), lwd=c(1,1,1))
+})
+
+# NE Plot
+with( data, plot(datetime, Voltage, type="l",
+                 ylab = "Voltage"))
+
+# SE Plot
+with( data, plot(datetime, Global_reactive_power, type="l"))
+
 dev.off()
