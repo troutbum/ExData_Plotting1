@@ -1,6 +1,7 @@
 # Exploratory Data Analysis
 # June 2014
 # Course Project 1
+# Plot 1
 
 # create a data subdirectory if it does not exist
 if (!file.exists("data")) {
@@ -22,44 +23,24 @@ if (!file.exists(xFile)) {
         dateDownloaded <- date()
 }
 
-# sample data file to determine 
 
-
+# sample data file to determine classes
 sampleData <- read.csv(xFile, stringsAsFactors=FALSE,sep=";",na.strings="?", nrows = 5)
 classes <- sapply(sampleData, class)
+classes
 
+# read all data and convert Date column from char
+all_data <- read.csv(xFile, stringsAsFactors=FALSE,sep=";",na.strings="?", colClasses = classes)
 
-largeData <- read.csv("huge-file.csv", header = TRUE, colClasses = classes)
-str(largeData)
+# subset data
+data <- subset(all_data, Date == "1/2/2007" | Date == "2/2/2007")
 
+# plot to screen
+library(datasets)
+quartz()
+hist(data$Global_active_power, xlab = "Global Active Power (kilowatts)", 
+     col="red", bg="white", main = "Global Active Power")
 
-data <- read.csv(xFile, stringsAsFactors=FALSE,sep=";",na.strings="?")
-
-classes <- sapply(data, class)
-
-as.Date(classes[1],"%d %m %Y")
-
-subdata <- data$Date=="16/12/2006"
-summary(subdata)
-
-
-
-# Big problems in Quiz 3 with mixed datatypes in columns
-# (Need to prevent creation of factor levels)
-
-# Method 1
-data <- read.csv(xFile, stringsAsFactors=FALSE,skip=4,nrows=190)
-data$X.4 <- as.numeric(gsub("[,]", "", data$X.4))                       # cleanup column
-mean(data$X.4)
-summary(data$X.4)
-
-# Method 2
-# not yet worked out
-#
-# data <- read.csv(xFile, colClasses=c("character","integer","character",
-#                                   "character","numeric",rep("character",5)))
-#             
-# headset <- read.csv(xFile, header = TRUE, nrows = 10)           # sample data
-# classes <- sapply(headset, class)
-# classes[names(classes) %in% c("time")] <- "character"           # issue
-# dataset <- read.csv(fname, header = TRUE, colClasses = classes)
+# save plot as PNG file
+dev.copy(png, file="plot1.png", width = 480, height = 480, bg="white")
+dev.off()
